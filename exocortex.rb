@@ -4,7 +4,7 @@ require 'rubygems'
 require 'readline'
 require 'ncurses'
 require 'yaml'
-require 'oauth'
+require 'twitter_oauth'
 
 trap('INT') { shutdown }
 
@@ -56,37 +56,38 @@ if (conf["twitter_consumer_key"].length == 0 ||
   shutdown
 end
 
-@consumer=OAuth::Consumer.new( 
-  conf["twitter_consumer_key"],
-  conf["twitter_consumer_secret"], {
-  :site=>"http://twitter.com"
-  })
 
-@request_token = nil
-@access_token = nil
+
+request_token = nil
+access_token = nil
 
 if (conf["twitter_access_token"].strip.length > 0)
-  @access_token = OAuth::AccessToken.new(@consumer,
-    conf["twitter_access_token"],
-    conf["twitter_access_token_secret"])
+  client=TwitterOAuth::Client.new( 
+    :consumer_key => conf["twitter_consumer_key"],
+    :consumer_secret => conf["twitter_consumer_secret"],
+    :token => conf["twitter_access_token"],
+    :secret => conf["twitter_access_token_secret"])
+else
+  client=TwitterOAuth::Client.new( 
+    :consumer_key => conf["twitter_consumer_key"],
+    :consumer_secret => conf["twitter_consumer_secret"])
 end
 
 
-while (@access_token.nil?)
+while (!client.authorized?)
   puts "No Twitter token found; please go to this URL and authorize me."
-  @request_token = @consumer.get_request_token
-  puts @request_token.authorize_url
+  request_token = client.request_token
+  puts request_token.authorize_url
   puts "Enter the PIN it gave you here:"
   verifier = gets.chomp
-  begin
-    @access_token = @request_token.get_access_token(:oauth_verifier => verifier)
-    puts "Twitter credentials obtained."
-    conf["twitter_access_token"] = @access_token.token
-    conf["twitter_access_token_secret"] = @access_token.secret
-    write_out_conf(conf)
-  rescue
-    @access_token = nil
-  end
+  access_token = client.authorize(
+    request_token.token,
+    request_token.secret,
+    :oauth_verifier => verifier)
+  puts "Twitter credentials obtained."
+  conf["twitter_access_token"] = access_token.token
+  conf["twitter_access_token_secret"] = access_token.secret
+  write_out_conf(conf)
 end
 
 puts "Ready to go."
