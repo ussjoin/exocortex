@@ -24,12 +24,7 @@ def shutdown
   exit
 end
 
-
-
 @twitter = ExoCortex::Twitter.new
-
-
-
 
 shutdown
 

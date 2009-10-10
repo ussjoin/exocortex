@@ -20,10 +20,11 @@ module ExoCortex
         conf.merge!(Twitter::blank_config)
         shutdown
       end
-      @consumer_key = conf["twitter"]["consumer_key"]
-      @consumer_secret = conf["twitter"]["consumer_secret"]
-      @token = conf["twitter"]["access_token"]
-      @secret = conf["twitter"]["access_token_secret"]
+      @config = conf["twitter"]
+      @consumer_key = @config["consumer_key"]
+      @consumer_secret = @config["consumer_secret"]
+      @token = @config["access_token"]
+      @secret = @config["access_token_secret"]
       if (@consumer_key.nil? || @consumer_secret.nil?)
         puts "Please enter the Twitter API credentials in the config file."
         conf.merge!(Twitter::blank_config)
@@ -54,10 +55,9 @@ module ExoCortex
           request_token.secret,
           :oauth_verifier => verifier)
         puts "Twitter credentials obtained."
-        @token = access_token.token
-        @secret = access_token.secret
-        Configuration.instance.update_value("twitter", "access_token", @token)
-        Configuration.instance.update_value("twitter", "access_token_secret", @secret)
+        @config["access_token"] = access_token.token
+        @config["access_token_secret"] = access_token.secret
+        Configuration.instance.update_namespace("twitter", @config)
       end
     end  
   end

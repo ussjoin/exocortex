@@ -30,5 +30,9 @@ module ExoCortex
       @conf[category][key] = value
     end
     
+    def update_namespace(category, hash)
+      @conf[category] = hash
+    end
+    
   end
 end
