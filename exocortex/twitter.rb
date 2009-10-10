@@ -59,6 +59,12 @@ module ExoCortex
         @config["access_token_secret"] = access_token.secret
         Configuration.instance.update_namespace("twitter", @config)
       end
-    end  
+    end
+    
+    def method_missing method,*args
+      @client.send method,*args
+    end
+    
+    
   end
 end
