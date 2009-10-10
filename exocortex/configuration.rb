@@ -1,10 +1,9 @@
 require 'yaml'
+require 'singleton'
 
 module ExoCortex
   class Configuration
-    def Configuration::blank_config
-      {}
-    end
+    include Singleton
     
     def initialize(options = {})
       begin
@@ -25,6 +24,10 @@ module ExoCortex
       File.open( 'config.yaml', 'w' ) do |out|
         YAML.dump(@conf, out)
       end
+    end
+    
+    def update_value(category, key, value)
+      @conf[category][key] = value
     end
     
   end

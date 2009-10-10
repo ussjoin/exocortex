@@ -18,19 +18,20 @@ def readline_with_hist_management
   line.strip
 end
 
-@config = nil
-
 def shutdown
   # May want to do cleanup here first!
-  @config.dump
+  ExoCortex::Configuration.instance.dump
   exit
 end
 
-@config = ExoCortex::Configuration.new
-
-@twitter = ExoCortex::Twitter.new({"configuration" => @config})
 
 
+@twitter = ExoCortex::Twitter.new
+
+
+
+
+shutdown
 
 
 
