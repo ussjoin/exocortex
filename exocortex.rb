@@ -24,9 +24,9 @@ def shutdown
   exit
 end
 
-@twitter = ExoCortex::Twitter.new
+at_exit {shutdown}
 
-shutdown
+@twitter = ExoCortex::Twitter.new
 
 
 
