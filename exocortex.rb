@@ -1,10 +1,9 @@
 #!ruby
 
 require 'rubygems'
-require 'readline'
-require 'ncurses'
 
 require 'exocortex/configuration'
+require 'exocortex/messagequeue'
 require 'exocortex/twitter'
 
 trap('INT') { shutdown }
@@ -26,8 +25,45 @@ end
 
 at_exit {shutdown}
 
-@twitter = ExoCortex::Twitter.new
+Shoes.app :width=> 640, :height => 400 do
+  @twitter = ExoCortex::Twitter.new
+  queue = ExoCortex::MessageQueue.instance
+  
+  
+  Thread.new do
+    while (true)
+      @twitter.home_timeline.reverse.each do |item|
+        queue.add_message("#{item['user']['screen_name']}: #{item['text']}")
+      end
+      sleep(20)
+    end
+  end
 
+  stack do
+    @editline = edit_line :width => 600
+    @itemstack = stack
+  end
 
+  
 
+  animate(1) do |frame|
+    alert = queue.alert
+    if (!alert.nil?)
+      @itemstack.prepend do
+        stack :margin => 1 do
+          para alert, :stroke => white
+        end
+      end
+    end
 
+    message = queue.message
+    if (!message.nil?)
+      @itemstack.prepend do
+        stack :margin => 1 do
+          background black
+          para message, :stroke => white
+        end
+      end
+    end
+  end
+end

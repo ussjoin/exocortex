@@ -1,3 +1,12 @@
+Shoes.setup do
+  gem 'oauth'
+  gem 'json'
+  gem 'mime-types'
+  
+  source 'http://gems.github.com'
+  gem 'moomerman-twitter_oauth'
+end
+
 require 'twitter_oauth'
 
 module ExoCortex
@@ -18,7 +27,7 @@ module ExoCortex
       if (conf["twitter"].nil?)
         puts "Please enter the Twitter API credentials in the config file."
         conf.merge!(Twitter::blank_config)
-        shutdown
+        exit
       end
       @config = conf["twitter"]
       @consumer_key = @config["consumer_key"]
@@ -28,7 +37,7 @@ module ExoCortex
       if (@consumer_key.nil? || @consumer_secret.nil?)
         puts "Please enter the Twitter API credentials in the config file."
         conf.merge!(Twitter::blank_config)
-        shutdown
+        exit
       end
 
       if (!@token.nil?)
