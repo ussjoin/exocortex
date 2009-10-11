@@ -13,12 +13,10 @@ module ExoCortex
   class Twitter
     def Twitter::blank_config
       {
-        "twitter" => {
-          "consumer_key" => nil,
-          "consumer_secret" => nil,
-          "access_token" => nil,
-          "access_token_secret" => nil,
-        }
+        "consumer_key" => nil,
+        "consumer_secret" => nil,
+        "access_token" => nil,
+        "access_token_secret" => nil,
       }
     end
     
@@ -26,7 +24,7 @@ module ExoCortex
       conf = Configuration.instance.hash
       if (conf["twitter"].nil?)
         puts "Please enter the Twitter API credentials in the config file."
-        conf.merge!(Twitter::blank_config)
+        Configuration.instance.update_namespace("twitter", Twitter::blank_config)
         exit
       end
       @config = conf["twitter"]

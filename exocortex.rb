@@ -47,15 +47,6 @@ Shoes.app :width=> 640, :height => 400 do
   
 
   animate(1) do |frame|
-    alert = queue.alert
-    if (!alert.nil?)
-      @itemstack.prepend do
-        stack :margin => 1 do
-          para alert, :stroke => white
-        end
-      end
-    end
-
     message = queue.message
     if (!message.nil?)
       @itemstack.prepend do
