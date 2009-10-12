@@ -72,6 +72,21 @@ module ExoCortex
       @client.send method,*args
     end
     
+    def start_long_running_thread
+      #Todo: Make this actually periodically check for more after the first run
+      queue = ExoCortex::MessageQueue.instance
+      Thread.new do
+        self.home_timeline.reverse.each do |item|
+          queue.add_message("#{item['user']['screen_name']}: #{item['text']}")
+        end
+      end
+    end
+  end
+  
+  class Tweet
+    # This is what Twitter will throw into the message queue
+    
+    
     
   end
 end
