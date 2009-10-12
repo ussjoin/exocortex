@@ -48,8 +48,18 @@ Shoes.app :width=> 640, :height => 400 do
     if (!message.nil?)
       @itemstack.prepend do
         stack :margin => 1 do
-          background black
-          para message, :stroke => white
+          back = black
+          if message.respond_to?("block_background")
+            back =  message.block_background
+          end
+          
+          str = white
+          if (message.respond_to?("block_stroke_color"))
+            str = message.block_stroke_color
+          end
+          
+          background back
+          para message.to_s, :stroke => str
         end
       end
     end

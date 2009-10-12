@@ -77,7 +77,7 @@ module ExoCortex
       queue = ExoCortex::MessageQueue.instance
       Thread.new do
         self.home_timeline.reverse.each do |item|
-          queue.add_message("#{item['user']['screen_name']}: #{item['text']}")
+          queue.add_message(Tweet.new(item))
         end
       end
     end
@@ -85,8 +85,23 @@ module ExoCortex
   
   class Tweet
     # This is what Twitter will throw into the message queue
+    @item_hash
+    def initialize(item_hash)
+      info("setup")
+      @item_hash = item_hash
+    end
     
+    def block_background
+      Shoes.rgb(0,0,0)
+    end
     
+    def block_stroke_color
+      Shoes.rgb(255,255,255)
+    end
+    
+    def to_s
+      "#{@item_hash['user']['screen_name']}: #{@item_hash['text']}"
+    end
     
   end
 end
