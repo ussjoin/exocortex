@@ -32,10 +32,12 @@ module ExoCortex
     
     def update_value(category, key, value)
       @conf[category][key] = value
+      self.dump
     end
     
     def update_namespace(category, hash)
       @conf[category] = hash
+      self.dump
     end
     
   end
