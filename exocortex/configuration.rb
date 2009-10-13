@@ -6,6 +6,10 @@ module ExoCortex
     include Singleton
     
     def initialize(options = {})
+      reload_configuration
+    end
+    
+    def reload_configuration
       begin
       @conf = YAML.load_file('config.yaml')
       rescue Exception => e
@@ -14,7 +18,7 @@ module ExoCortex
           YAML.dump(@conf, out)
         end
       end
-    end  
+    end
     
     def hash
       @conf

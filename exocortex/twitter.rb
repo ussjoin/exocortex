@@ -20,22 +20,30 @@ module ExoCortex
       }
     end
     
-    def initialize(options = {})
+    def get_secrets
       conf = Configuration.instance.hash
+      flag = true
       if (conf["twitter"].nil?)
-        puts "Please enter the Twitter API credentials in the config file."
-        Configuration.instance.update_namespace("twitter", Twitter::blank_config)
-        exit
+        flag = false
+      else
+        @config = conf["twitter"]
+        @consumer_key = @config["consumer_key"]
+        @consumer_secret = @config["consumer_secret"]
+        @token = @config["access_token"]
+        @secret = @config["access_token_secret"]
+        if (@consumer_key.nil? || @consumer_secret.nil?)
+          flag = false
+        end
       end
-      @config = conf["twitter"]
-      @consumer_key = @config["consumer_key"]
-      @consumer_secret = @config["consumer_secret"]
-      @token = @config["access_token"]
-      @secret = @config["access_token_secret"]
-      if (@consumer_key.nil? || @consumer_secret.nil?)
-        puts "Please enter the Twitter API credentials in the config file."
-        conf.merge!(Twitter::blank_config)
-        exit
+      flag
+    end
+    
+    def initialize   
+      while (!get_secrets)
+        Configuration.instance.update_namespace("twitter", Twitter::blank_config)
+        Configuration.instance.dump
+        alert "Please enter the Twitter API credentials in the config file. Hit OK when done."
+        Configuration.instance.reload_configuration
       end
 
       if (!@token.nil?)
@@ -52,19 +60,16 @@ module ExoCortex
 
 
       while (!@client.authorized?)
-        puts "No Twitter token found; please go to this URL and authorize me."
         request_token = @client.request_token
-        puts request_token.authorize_url
-        puts "Enter the PIN it gave you here:"
-        verifier = gets.chomp
+        verifier = ask "No Twitter token found; please go to the URL, authorize me, and give me the PIN:\n"+request_token.authorize_url        
         access_token = @client.authorize(
           request_token.token,
           request_token.secret,
           :oauth_verifier => verifier)
-        puts "Twitter credentials obtained."
         @config["access_token"] = access_token.token
         @config["access_token_secret"] = access_token.secret
         Configuration.instance.update_namespace("twitter", @config)
+        Configuration.instance.dump
       end
     end
     

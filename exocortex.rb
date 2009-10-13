@@ -26,21 +26,20 @@ end
 at_exit {shutdown}
 
 Shoes.app :width=> 640, :height => 400 do
+
+  # Message Queue
+  @queue = ExoCortex::MessageQueue.instance
+
+  # Module Invocations
+  @twitter = ExoCortex::Twitter.new
+  @twitter.start_long_running_thread
+
   
   #Initial layout setup
   stack do
     @editline = edit_line :width => 600
     @itemstack = stack
   end
-  
-  # Message Queue
-  @queue = ExoCortex::MessageQueue.instance
-  
-  # Module Invocations
-  @twitter = ExoCortex::Twitter.new
-  @twitter.start_long_running_thread
-  
-
   
   #Animation runner
   animate(1) do |frame|
