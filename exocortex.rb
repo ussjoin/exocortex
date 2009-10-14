@@ -37,7 +37,10 @@ Shoes.app :width=> 640, :height => 400 do
   
   #Initial layout setup
   stack do
-    @editline = edit_line :width => 600
+    flow do
+      @editline = edit_line :width => 550
+      @queuelength = flow :width => 80
+    end
     @itemstack = stack
   end
   
@@ -62,5 +65,6 @@ Shoes.app :width=> 640, :height => 400 do
         end
       end
     end
+    @queuelength.clear {para " #{@queue.length}"}
   end
 end

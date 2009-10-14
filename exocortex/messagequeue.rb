@@ -20,5 +20,9 @@ module ExoCortex
       end
     end
     
+    def length
+      @messages.length
+    end
+    
   end
 end
