@@ -36,7 +36,7 @@ module ExoCortex
     end
     
     def initialize
-      @since_id = {"home" => 0, "mentions" => 0, "down" => 0}
+      @since_id = {"home" => 0, "mentions" => 0}
       
       while (!get_secrets)
         Configuration.instance.update_namespace("twitter", Twitter::blank_config)
