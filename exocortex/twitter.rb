@@ -10,6 +10,20 @@ end
 
 require 'twitter_oauth'
 
+# Monkeypatch: Making TwitterOAuth not return search results only in an OpenStruct, which is obnoxious IMHO.
+module TwitterOAuth
+  class Client
+    def search(q, options={})
+      options[:page] ||= 1
+      options[:per_page] ||= 20
+      response = open("http://search.twitter.com/search.json?q=#{URI.escape(q)}&page=#{options[:page]}&rpp=#{options[:per_page]}&since_id=#{options[:since_id]}")
+      search_result = JSON.parse(response.read)
+      search_result["results"]
+    end
+  end
+end
+
+
 module ExoCortex
   class Twitter
     def Twitter::blank_config
@@ -22,7 +36,7 @@ module ExoCortex
     end
     
     def initialize
-      @since_id = {"home" => 0, "mentions" => 0}
+      @since_id = {"home" => 0, "mentions" => 0, "down" => 0}
       
       while (!get_secrets)
         Configuration.instance.update_namespace("twitter", Twitter::blank_config)
