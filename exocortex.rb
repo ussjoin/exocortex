@@ -2,69 +2,14 @@
 
 require 'rubygems'
 
-require 'exocortex/configuration'
-require 'exocortex/messagequeue'
-require 'exocortex/twitter'
+require 'exocortex/view'
 
-trap('INT') { shutdown }
+trap('INT') { ExoCortex::View::shutdown }
+at_exit { ExoCortex::View::shutdown }
 
-def readline_with_hist_management
-  line = Readline.readline('> ', true)
-  return nil if line.nil?
-  if line =~ /^\s*$/ or Readline::HISTORY.to_a[-2] == line
-    Readline::HISTORY.pop
-  end
-  line.strip
-end
 
-def shutdown
-  # May want to do cleanup here first!
-  ExoCortex::Configuration.instance.dump
-  exit
-end
 
-at_exit {shutdown}
+ExoCortex::View.instance.run
 
-Shoes.app :width=> 640, :height => 400 do
 
-  # Message Queue
-  @queue = ExoCortex::MessageQueue.instance
 
-  # Module Invocations
-  @twitter = ExoCortex::Twitter.new
-  @twitter.start_long_running_thread
-
-  
-  #Initial layout setup
-  stack do
-    flow do
-      @editline = edit_line :width => 550
-      @queuelength = flow :width => 80
-    end
-    @itemstack = stack
-  end
-  
-  #Animation runner
-  animate(1) do |frame|
-    message = @queue.message
-    if (!message.nil?)
-      @itemstack.prepend do
-        stack :margin => 1 do
-          back = black
-          if message.respond_to?("block_background")
-            back =  message.block_background
-          end
-          
-          str = white
-          if (message.respond_to?("block_stroke_color"))
-            str = message.block_stroke_color
-          end
-          
-          background back
-          para message.to_s, :stroke => str
-        end
-      end
-    end
-    @queuelength.clear {para " #{@queue.length}"}
-  end
-end

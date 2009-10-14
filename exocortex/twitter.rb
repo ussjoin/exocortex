@@ -35,6 +35,10 @@ module ExoCortex
       }
     end
     
+    def handled_commands
+      ["tweet"]
+    end
+    
     def initialize
       @since_id = {"home" => 0, "mentions" => 0}
       
