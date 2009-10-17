@@ -52,12 +52,14 @@ module ExoCortex
         #Initial layout setup
         stack do
           flow do
-            @editline = edit_box :width => 580, :height => 20 do |e|
+            @editline = edit_box :width => 520, :height => 30 do |e|
               if (e.text.index(/\n/))
                 ExoCortex::View.instance.parse(e.text.chomp)
                 e.text = nil
               end
+              @chars.clear {para " #{e.text.length}"}
             end
+            @chars = flow :width => 50
             @queuelength = flow :width => 50
           end
           @itemstack = stack

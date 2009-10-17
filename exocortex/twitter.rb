@@ -84,6 +84,7 @@ module ExoCortex
     def start_long_running_thread
       Thread.new do
         while (true)
+          #ExoCortex::MessageQueue.instance.add_message("Twitter Module: Now enqueuing.")
           enqueue_new_messages
           sleep(60) # I have a Twitter Dev Account (20K limit/hr), so I can do this. Todo: Should be tuneable.
         end
