@@ -34,6 +34,8 @@ module ExoCortex
       when /^tweet/i
         @twitter.update(@parameter_string)
         @queue.add_message("Tweeted: \"#{@parameter_string}\"")
+      when /^twitter/i
+        @twitter.process_command(@parameter_string)
       else
         @queue.add_message("Unrecognized Command: \"#{command_string}\"")
       end
@@ -63,7 +65,7 @@ module ExoCortex
         @editline.focus
 
         #Animation runner
-        animate(1) do |frame|
+        animate(4) do |frame|
           message = ExoCortex::View.instance.queue.message
           if (!message.nil?)
             @itemstack.prepend do
@@ -79,7 +81,7 @@ module ExoCortex
                 end
 
                 background back
-                para message.to_s, :stroke => str
+                tagline message.to_s, :stroke => str
               end
             end
           end

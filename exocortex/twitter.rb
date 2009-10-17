@@ -96,6 +96,62 @@ module ExoCortex
       end
     end
     
+    def process_command(command_string)
+      pt = command_string.index(/\s/)
+      if (!pt.nil?)
+        command = command_string[0...pt]
+        parameter_string = command_string[pt+1...command_string.length]
+        parameter_string.strip!
+      else
+        command = command_string
+        parameter_string = nil
+      end
+      
+      case command
+      when /^add/i
+        if (!parameter_string.nil?)
+          pt = parameter_string.index(/\s/)
+          if (!pt.nil?)
+            what = parameter_string[0...pt]
+            who = parameter_string[pt+1...parameter_string.length]
+            who.strip!
+            if (!what.nil? && !who.nil?)
+              case what
+              when /^follow/i
+                @client.friend(who)
+                ExoCortex::MessageQueue.instance.add_message("Twitter Module: Added Friend: \"#{who}\"")
+              when /^search/i
+                @since_id[who] = 0
+                ExoCortex::MessageQueue.instance.add_message("Twitter Module: Added Search: \"#{who}\"")
+                enqueue_new_messages
+              end
+            end
+          end
+        end
+      when /^remove/i
+        if (!parameter_string.nil?)
+          pt = parameter_string.index(/\s/)
+          if (!pt.nil?)
+            what = parameter_string[0...pt]
+            who = parameter_string[pt+1...parameter_string.length]
+            who.strip!
+            if (!what.nil? && !who.nil?)
+              case what
+              when /^follow/i
+                @client.unfriend(who)
+                ExoCortex::MessageQueue.instance.add_message("Twitter Module: Removed Friend: \"#{who}\"")
+              when /^search/i
+                @since_id.delete(who)
+                ExoCortex::MessageQueue.instance.add_message("Twitter Module: Removed Search: \"#{who}\"")
+              end
+            end
+          end
+        end
+      else
+        ExoCortex::MessageQueue.instance.add_message("Twitter Module: Unrecognized Command: \"#{command_string}\"")
+      end
+    end
+    
     private
     
     def enqueue_messages(kind)
