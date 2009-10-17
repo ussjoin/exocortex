@@ -67,7 +67,7 @@ module ExoCortex
         @editline.focus
 
         #Animation runner
-        animate(4) do |frame|
+        animate(1) do |frame|
           message = ExoCortex::View.instance.queue.message
           if (!message.nil?)
             @itemstack.prepend do
